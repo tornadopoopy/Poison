@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <AssemblyName>Poison Menu</AssemblyName>
+    <AssemblyName>TornadoMenu</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     
     <TargetFramework>netstandard2.1</TargetFramework>
@@ -600,6 +600,13 @@
     </Reference>
     <Reference Include="ZString">
       <HintPath>$(ManagedGameRefs)\ZString.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Utilla">
+      <HintPath>$(PluginsPath)\Utilla\Utilla.dll</HintPath>
+      <Private>false</Private>
     </Reference>
   </ItemGroup>
 </Project>
