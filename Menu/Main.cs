@@ -31,6 +31,7 @@ using Poison.Classes.Menu;
 using Poison.Classes.Mods;
 using Poison.Extensions;
 using Poison.Managers;
+using Poison.Tornado;
 using Poison.Mods;
 using Poison.Patches;
 using Poison.Patches.Menu;
@@ -252,6 +253,11 @@ namespace Poison.Menu
 
         public static void Prefix()
         {
+            if (!TornadoLobbyGate.InModdedRoom)
+            {
+                TornadoLobbyGate.EnsureClosed();
+                return;
+            }
             #region Controls
             try
             {
@@ -384,7 +390,7 @@ namespace Poison.Menu
                 if (!XRSettings.isDeviceActive)
                     buttonCondition = false;
 
-                if (wristMenu)
+                if (wristMenu && !TornadoLobbyGate.ForceYToggle)
                 {
                     bool shouldOpen = Vector3.Distance(GorillaTagger.Instance.leftHandTransform.position + GorillaTagger.Instance.leftHandTransform.forward * 0.1f, ControllerUtilities.GetTrueRightHand().position) < 0.1f;
                     if (rightHand)
@@ -438,6 +444,7 @@ namespace Poison.Menu
                 buttonCondition |= isKeyboardCondition;
                 buttonCondition |= inTextInput;
                 buttonCondition &= !Lockdown;
+                buttonCondition &= TornadoLobbyGate.InModdedRoom;
 
                 if (watchMenu)
                     buttonCondition = isKeyboardCondition;
@@ -1376,6 +1383,11 @@ namespace Poison.Menu
         private static readonly List<string> toRemoveLabel = new List<string>();
         public static void Postfix()
         {
+            if (!TornadoLobbyGate.InModdedRoom)
+            {
+                postActions.Clear();
+                return;
+            }
             try
             {
                 foreach (string buttonName in postActions)
@@ -3170,7 +3182,7 @@ namespace Poison.Menu
         public static event Action OnMenuOpened;
         public static void OpenMenu()
         {
-            if (Hud.InUse) return;
+            if (!TornadoLobbyGate.InModdedRoom || Hud.InUse) return;
 
             try
             {
@@ -5939,6 +5951,8 @@ namespace Poison.Menu
         /// <param name="ignoreForce">true to bypass force-related checks and restrictions during the toggle operation; otherwise, false.</param>
         public static void Toggle(string buttonText, bool fromMenu = false, bool ignoreForce = false)
         {
+            if (!TornadoLobbyGate.InModdedRoom && !TornadoLobbyGate.Resetting)
+                return;
             switch (buttonText)
             {
                 case "PreviousPage":
@@ -6735,7 +6749,7 @@ jgs \_   _/ |Oo\
         public static int buttonClickVolume = 4;
         public static int buttonOffset = 0;
         public static int menuButtonIndex = 1;
-        public static bool toggleButton;
+        public static bool toggleButton = true;
         public static bool toggleButtonHeld;
         public static bool toggleButtonActive;
         public static bool keyboardWithToggleButton;
@@ -7073,14 +7087,14 @@ jgs \_   _/ |Oo\
         public static ExtGradient backgroundColor = new ExtGradient
         {
             colors = ExtGradient.GetSolidGradient(
-                new Color32(6, 252, 118, 128)
+                new Color32(38, 137, 255, 255)
             )
         };
 
         public static ExtGradient menuBackgroundColor = new ExtGradient
         {
             colors = ExtGradient.GetSolidGradient(
-                new Color32(22, 22, 22, 128)
+                new Color32(15, 89, 188, 255)
             )
         };
 
@@ -7088,13 +7102,13 @@ jgs \_   _/ |Oo\
             new ExtGradient // Released
             {
                 colors = ExtGradient.GetSolidGradient(
-                    new Color32(6, 252, 118, 255)
+                    new Color32(48, 148, 248, 255)
                 )
             },
             new ExtGradient // Pressed
             {
                 colors = ExtGradient.GetSolidGradient(
-                    new Color32(4, 188, 88, 255)
+                    new Color32(20, 100, 212, 255)
                 )
             }
         };
