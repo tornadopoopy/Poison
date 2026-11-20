@@ -1104,24 +1104,24 @@ exit 0";
         {
             new ThemeDefinition
             {
-                Name = "Poison",
+                Name = "Tornado Blue",
                 Background = () => new ExtGradient
                 {
-                    colors = ExtGradient.GetSolidGradient(new Color32(6, 252, 118, 128))
+                    colors = ExtGradient.GetSolidGradient(new Color32(38, 137, 255, 255))
                 },
                 MenuBackground = () => new ExtGradient
                 {
-                    colors = ExtGradient.GetSolidGradient(new Color32(22, 22, 22, 128))
+                    colors = ExtGradient.GetSolidGradient(new Color32(15, 89, 188, 255))
                 },
                 ButtonColors = () => new[]
                 {
                     new ExtGradient
                     {
-                        colors = ExtGradient.GetSolidGradient(new Color32(6, 252, 118, 255))
+                        colors = ExtGradient.GetSolidGradient(new Color32(48, 148, 248, 255))
                     },
                     new ExtGradient
                     {
-                        colors = ExtGradient.GetSolidGradient(new Color32(4, 188, 88, 255))
+                        colors = ExtGradient.GetSolidGradient(new Color32(20, 100, 212, 255))
                     }
                 },
                 TextColors = () => new[]
