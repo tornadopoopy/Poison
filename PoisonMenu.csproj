@@ -605,7 +605,8 @@
 
   <ItemGroup>
     <Reference Include="Utilla">
-      <HintPath>$(PluginsPath)\Utilla\Utilla.dll</HintPath>
+      <HintPath Condition="Exists('$(PluginsPath)\Utilla\Utilla.dll')">$(PluginsPath)\Utilla\Utilla.dll</HintPath>
+      <HintPath Condition="!Exists('$(PluginsPath)\Utilla\Utilla.dll')">References\Utilla\Utilla.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>
