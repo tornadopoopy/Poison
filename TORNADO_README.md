@@ -11,6 +11,20 @@ This branch adapts the open-source Poison Gorilla Tag menu to the requested Torn
 - **Appearance:** the original Poison 3D menu structure, page arrows and FPS indicator, but with a blue primary theme and **Tornado Menu** title.
 - **Rooms:** the menu is gated on Utilla's modded-gamemode events. It stays closed by default and resets enabled menu toggles when a modded gamemode is exited.
 
+## GitHub-hosted build — private dependencies
+
+The `.github/workflows/build.yml` workflow runs on GitHub-hosted Windows. It downloads a ZIP of the user's local reference assemblies from a **private** repository.
+
+One-time owner setup:
+
+1. Create a **private** repository named `tornadopoopy/tornado-menu-build-deps` with a `main` branch.
+2. Upload `TornadoBuildReferences.zip` into that private repository's root (do **not** upload it to this public repository).
+3. Create a GitHub fine-grained personal access token with **Contents: Read-only**, restricted to just `tornadopoopy/tornado-menu-build-deps`.
+4. In `tornadopoopy/Poison` → Settings → Secrets and variables → Actions, create secret `TORNADO_DEPS_TOKEN` with the token as its value.
+5. Rerun `Build Tornado Menu` from the Actions tab or manually dispatch `build.yml`.
+
+The ZIP must contain `References/Managed/*.dll`, `References/core/*.dll`, and `References/Utilla/Utilla.dll`. The ZIP is for private build dependency storage; do not distribute it publicly. GitHub-hosted builds do not have local game installations, so missing references are expected until this setup is complete.
+
 ## Build
 
 Install BepInEx 5 (Mono) and a compatible Utilla mod in your Gorilla Tag PC installation. The project expects `BepInEx/plugins/Utilla/Utilla.dll`. Update `Directory.Build.props` if your game is not in the default Steam directory.
