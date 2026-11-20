@@ -1,0 +1,61 @@
+name: Build Tornado Menu
+
+on:
+  push:
+    branches:
+      - tornado-menu-vr-modded-only
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    # Gorilla Tag's managed assemblies and BepInEx/Utilla are not committed
+    # to this repository. Use a Windows self-hosted runner with those installed.
+    runs-on: [self-hosted, Windows]
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Install .NET 8 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Verify local Gorilla Tag dependencies
+        shell: pwsh
+        run: |
+          $candidates = @(
+            'G:\SteamLibrary\steamapps\common\Gorilla Tag',
+            'D:\SteamLibrary\steamapps\common\Gorilla Tag',
+            'C:\Program Files (x86)\Steam\steamapps\common\Gorilla Tag'
+          )
+          $game = $candidates | Where-Object { Test-Path (Join-Path $_ 'Gorilla Tag_Data\Managed\Assembly-CSharp.dll') } | Select-Object -First 1
+          if (-not $game) { throw 'Gorilla Tag Managed assemblies not found. Configure GamePath in Directory.Build.props and install the game on this runner.' }
+          if (-not (Test-Path (Join-Path $game 'BepInEx\core\BepInEx.dll'))) { throw 'BepInEx 5 core DLL missing on this runner.' }
+          $utilla = Join-Path $game 'BepInEx\plugins\Utilla\Utilla.dll'
+          if (-not (Test-Path $utilla)) { throw 'Utilla.dll must exist at BepInEx\plugins\Utilla\Utilla.dll for the current project references.' }
+          Write-Host "Found game assemblies and Utilla."
+
+      - name: Restore
+        run: dotnet restore PoisonMenu.csproj
+
+      - name: Build Release
+        run: dotnet build PoisonMenu.csproj --configuration Release --no-restore -p:CI=TRUE
+
+      - name: Confirm DLL exists
+        shell: pwsh
+        run: |
+          $dll = 'bin\Release\netstandard2.1\TornadoMenu.dll'
+          if (-not (Test-Path $dll)) { throw "Expected DLL not found: $dll" }
+          Write-Host "Built $dll"
+
+      - name: Upload Tornado Menu DLL
+        uses: actions/upload-artifact@v4
+        with:
+          name: TornadoMenu-DLL
+          path: bin/Release/netstandard2.1/TornadoMenu.dll
+          if-no-files-found: error
