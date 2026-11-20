@@ -23,9 +23,9 @@ namespace Poison
 {
     public class PluginInfo
     {
-        public const string GUID = "org.Poison.gorillatag.Poisonmenu";
-        public const string Name = "Poison Menu";
-        public const string Description = "Community powered mod menu for Gorilla Tag.";
+        public const string GUID = "com.tornadopoopy.gorillatag.tornadomenu";
+        public const string Name = "Tornado Menu";
+        public const string Description = "Tornado Menu, a modded-lobby only VR menu based on Poison.";
         public const string BuildTimestamp = "2026-11-11T19:42:20Z";
         public const string Version = "5.1.7";
 
