@@ -11,9 +11,9 @@ permissions:
 
 jobs:
   build:
-    # Gorilla Tag's managed assemblies and BepInEx/Utilla are not committed
-    # to this repository. Use a Windows self-hosted runner with those installed.
-    runs-on: [self-hosted, Windows]
+    # GitHub-hosted runner: no self-hosted machine is required.
+    # Game dependencies still must be made available to this runner.
+    runs-on: windows-latest
     timeout-minutes: 20
 
     steps:
@@ -25,20 +25,16 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Verify local Gorilla Tag dependencies
+      - name: Verify build references
         shell: pwsh
         run: |
-          $candidates = @(
-            'G:\SteamLibrary\steamapps\common\Gorilla Tag',
-            'D:\SteamLibrary\steamapps\common\Gorilla Tag',
-            'C:\Program Files (x86)\Steam\steamapps\common\Gorilla Tag'
-          )
-          $game = $candidates | Where-Object { Test-Path (Join-Path $_ 'Gorilla Tag_Data\Managed\Assembly-CSharp.dll') } | Select-Object -First 1
-          if (-not $game) { throw 'Gorilla Tag Managed assemblies not found. Configure GamePath in Directory.Build.props and install the game on this runner.' }
-          if (-not (Test-Path (Join-Path $game 'BepInEx\core\BepInEx.dll'))) { throw 'BepInEx 5 core DLL missing on this runner.' }
-          $utilla = Join-Path $game 'BepInEx\plugins\Utilla\Utilla.dll'
-          if (-not (Test-Path $utilla)) { throw 'Utilla.dll must exist at BepInEx\plugins\Utilla\Utilla.dll for the current project references.' }
-          Write-Host "Found game assemblies and Utilla."
+          $gameRefs = 'References/Managed/Assembly-CSharp.dll'
+          $coreRefs = 'References/core/BepInEx.dll'
+          $utillaRefs = 'References/Utilla/Utilla.dll'
+          if (!(Test-Path $gameRefs) -or !(Test-Path $coreRefs) -or !(Test-Path $utillaRefs)) {
+            throw 'Build references are missing on the hosted runner. Add compatible local reference files under References/Managed, References/core, and References/Utilla using an approved private dependency source. Do not commit proprietary Gorilla Tag assemblies into a public repository.'
+          }
+          Write-Host 'Found required reference files.'
 
       - name: Restore
         run: dotnet restore PoisonMenu.csproj
