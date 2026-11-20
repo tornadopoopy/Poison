@@ -563,7 +563,7 @@ namespace Poison.Menu
 
                 if (animatedTitle && title != null)
                 {
-                    string targetString = doCustomName ? NoRichtextTags(customMenuName) : "Poison Menu";
+                    string targetString = doCustomName ? NoRichtextTags(customMenuName) : "Tornado Menu";
                     int length = (int)Mathf.PingPong(Time.time / 0.25f, targetString.Length + 1);
                     title.text = length > 0 ? targetString[..length] : "";
                 }
@@ -2523,7 +2523,7 @@ namespace Poison.Menu
 
                 if (animatedTitle)
                 {
-                    string targetString = doCustomName ? NoRichtextTags(customMenuName) : "Poison Menu";
+                    string targetString = doCustomName ? NoRichtextTags(customMenuName) : "Tornado Menu";
                     int length = (int)Mathf.PingPong(Time.time / 0.25f, targetString.Length);
                     title.text = length > 0 ? targetString[..length] : "";
                 }
@@ -3042,7 +3042,9 @@ namespace Poison.Menu
                         }
                         else
                         {
-                            menu.transform.position = GorillaTagger.Instance.leftHandTransform.position;
+                            menu.transform.position = GorillaTagger.Instance.leftHandTransform.position
+                                + GorillaTagger.Instance.leftHandTransform.up * 0.09f
+                                + GorillaTagger.Instance.leftHandTransform.forward * 0.05f;
                             menu.transform.rotation = GorillaTagger.Instance.leftHandTransform.rotation;
                         }
                         if (flipMenu)
