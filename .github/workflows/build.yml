@@ -25,16 +25,27 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Verify build references
+      - name: Download private build dependencies
         shell: pwsh
+        env:
+          DEPS_TOKEN: ${{ secrets.TORNADO_DEPS_TOKEN }}
         run: |
-          $gameRefs = 'References/Managed/Assembly-CSharp.dll'
-          $coreRefs = 'References/core/BepInEx.dll'
-          $utillaRefs = 'References/Utilla/Utilla.dll'
-          if (!(Test-Path $gameRefs) -or !(Test-Path $coreRefs) -or !(Test-Path $utillaRefs)) {
-            throw 'Build references are missing on the hosted runner. Add compatible local reference files under References/Managed, References/core, and References/Utilla using an approved private dependency source. Do not commit proprietary Gorilla Tag assemblies into a public repository.'
+          if ([string]::IsNullOrWhiteSpace($env:DEPS_TOKEN)) {
+            throw 'Missing TORNADO_DEPS_TOKEN. Create a fine-grained PAT with Contents: Read on the private tornadopoopy/tornado-menu-build-deps repository, then set it as an Actions repository secret in Poison.'
           }
-          Write-Host 'Found required reference files.'
+          $headers = @{
+            Authorization = "Bearer $env:DEPS_TOKEN"
+            Accept = 'application/vnd.github.raw+json'
+            'X-GitHub-Api-Version' = '2022-11-28'
+          }
+          $url = 'https://api.github.com/repos/tornadopoopy/tornado-menu-build-deps/contents/TornadoBuildReferences.zip?ref=main'
+          Invoke-WebRequest -Uri $url -Headers $headers -OutFile 'TornadoBuildReferences.zip'
+          if (!(Test-Path 'TornadoBuildReferences.zip')) { throw 'Dependency download failed.' }
+          Expand-Archive -LiteralPath 'TornadoBuildReferences.zip' -DestinationPath '.' -Force
+          foreach ($file in @('References/Managed/Assembly-CSharp.dll', 'References/core/BepInEx.dll', 'References/Utilla/Utilla.dll')) {
+            if (!(Test-Path $file)) { throw "Missing extracted dependency: $file" }
+          }
+          Write-Host 'Private build references extracted.'
 
       - name: Restore
         run: dotnet restore PoisonMenu.csproj
