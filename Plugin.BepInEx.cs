@@ -22,12 +22,14 @@
 using BepInEx;
 using Poison.Managers;
 using Poison.Menu;
+using Poison.Tornado;
 using System.ComponentModel;
 
 namespace Poison
 {
     [Description(PluginInfo.Description)]
     [BepInPlugin(PluginInfo.GUID, PluginInfo.Name, PluginInfo.Version)]
+    [BepInDependency("org.legoandmars.gorillatag.utilla", BepInDependency.DependencyFlags.HardDependency)]
     public class PluginBepInEx : BaseUnityPlugin
     {
         public static bool FirstLaunch;
@@ -53,6 +55,7 @@ namespace Poison
                 }
             });
             Bootstrapper.Initialize();
+            gameObject.AddComponent<TornadoLobbyGate>();
         }
 
 
